@@ -7,7 +7,7 @@ on:
   push:
     branches: 
       - master
-      - feature*
+      - SW*
 jobs:
   build:
 
