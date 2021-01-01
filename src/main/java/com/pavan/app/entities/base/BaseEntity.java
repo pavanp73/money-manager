@@ -15,9 +15,10 @@ import java.util.UUID;
 public class BaseEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(updatable = false, nullable = false, columnDefinition = "CHAR(36)")
     private UUID id;
 
     @Type(type = "org.hibernate.type.LocalDateTimeType")

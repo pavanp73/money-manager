@@ -1,4 +1,4 @@
-package com.pavan.app.models;
+package com.pavan.app.models.enums;
 
 public enum Category {
 
