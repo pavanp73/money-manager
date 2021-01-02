@@ -7,6 +7,7 @@ import com.pavan.app.models.enums.OperationType;
 import com.pavan.app.models.enums.TransactionType;
 import com.pavan.app.repositories.TransactionRepository;
 import com.pavan.app.services.mapper.TransactionMapper;
+import com.pavan.app.services.util.DateUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,11 +61,16 @@ public class TransactionService {
         if(transaction == null){
             return null;
         }
-        Transaction transactionToBeUpdated = transactionMapper.mapOneToEntity(transactionDto);
-        transactionToBeUpdated.setId(id);
-        Transaction updatedTransaction = transactionRepository.save(transactionToBeUpdated);
+        transaction.setTransactionType(transactionDto.getTransactionType());
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setCategory(transactionDto.getCategory());
+        transaction.setNote(transactionDto.getNote());
+        transaction.setPaymentMode(transactionDto.getPaymentMode());
+        transaction.setTransactionDate(DateUtility.convertToDate(transactionDto.getTransactionDate()));
+
+        Transaction updatedTransaction = transactionRepository.save(transaction);
         //if there is any change in amount then update account's balance
-        if(!transactionToBeUpdated.getAmount().equals(updatedTransaction.getAmount())){
+        if(!updatedTransaction.getAmount().equals(transactionDto.getAmount())){
             accountService.updateBalance(updatedTransaction, OperationType.ADD_OR_UPDATE);
         }
         return transactionMapper.mapOneToDto(updatedTransaction);
