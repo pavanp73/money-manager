@@ -3,6 +3,7 @@ package com.pavan.app.models.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pavan.app.annotations.CheckAccountType;
 import com.pavan.app.annotations.NotNullOrBlank;
+import com.pavan.app.annotations.NotZero;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountDto {
@@ -17,6 +18,7 @@ public class AccountDto {
             "Bank/Debit Card/Credit Card/Wallet/Savings")
     private String accountType;
 
+    @NotZero(message = "Initial amount cannot be 0/0.0")
     private Double initialAmount;
 
     private Double balance;

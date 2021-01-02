@@ -18,7 +18,7 @@ public class CheckAccountTypeValidator implements ConstraintValidator<CheckAccou
             return false;
         }
         for (AccountType e : AccountType.values()){
-            if(e.getType().equals(s)){
+            if(e.name().equals(s)){
                 return true;
             }
         }

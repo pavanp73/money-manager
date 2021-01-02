@@ -1,7 +1,10 @@
 package com.pavan.app.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.pavan.app.annotations.NotNullOrBlank;
+import com.pavan.app.annotations.*;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionDto {
@@ -9,29 +12,28 @@ public class TransactionDto {
     private String id;
 
     @NotNullOrBlank(message = "Transaction type cannot be empty")
-    //Todo - Validate transaction types
+    @CheckTransactionType(message = "Invalid transaction type")
     private String transactionType;
 
     @NotNullOrBlank(message = "Source Account name cannot be empty")
     private String fromAccountName;
 
     @NotNullOrBlank(message = "Category cannot be empty")
-    //Todo - validate category types
+    @CheckCategory(message = "Invalid category")
     private String category;
 
-    //Todo - validate destination account name only for TRANSFER types
     private String toAccountName;
 
-    //Todo - validation for 0.0 and null values
+    @NotZero(message = "Amount cannot be 0/0.0")
     private Double amount;
 
     private String note;
 
     @NotNullOrBlank(message = "Payment mode cannot be empty")
-    //Todo - Validate payment modes
+    @CheckPaymentMode(message = "Invalid payment mode")
     private String paymentMode;
 
-    @NotNullOrBlank(message = "Transaction date cannot be empty. Date format; dd-MM-yyyy")
+    @DateFormatCheck(message = "Transaction date cannot be empty. Date format; dd-MM-yyyy")
     private String transactionDate;
 
     public TransactionDto() {
