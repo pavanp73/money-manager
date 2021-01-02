@@ -12,6 +12,7 @@ import com.pavan.app.services.util.FinUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -94,7 +95,20 @@ public class AccountService {
                 accountRepository.save(sourceAccount);
             }
             case TRANSFER -> {
-                //Todo - update source and destination accounts
+                Account sourceAccount = transaction.getAccount();
+                Account destinationAccount = transaction.getTransferToAccount();
+                if(OperationType.DELETE.equals(operationType)){
+                    sourceAccount.setBalance(FinUtility.credit(sourceAccount, transaction.getAmount()));
+                    destinationAccount.setBalance(FinUtility.debit(destinationAccount, transaction.getAmount()));
+                }
+                else{
+                    sourceAccount.setBalance(FinUtility.debit(sourceAccount, transaction.getAmount()));
+                    destinationAccount.setBalance(FinUtility.credit(destinationAccount, transaction.getAmount()));
+                }
+                List<Account> accounts = new ArrayList<>();
+                accounts.add(sourceAccount);
+                accounts.add(destinationAccount);
+                accountRepository.saveAll(accounts);
             }
         }
     }
