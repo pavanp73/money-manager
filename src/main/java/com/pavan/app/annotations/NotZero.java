@@ -1,6 +1,6 @@
 package com.pavan.app.annotations;
 
-import com.pavan.app.validations.NotNullOrBlankValidator;
+import com.pavan.app.validations.NotZeroValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,7 +13,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE_USE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = NotNullOrBlankValidator.class)
+@Constraint(validatedBy = NotZeroValidator.class)
 @Documented
 public @interface NotZero {
 

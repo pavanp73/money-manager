@@ -14,7 +14,7 @@ public class AccountMapper extends AbstractMapper<Account, AccountDto> {
         Account account = new Account();
         account.setAccountName(accountDto.getAccountName());
         account.setAccountType(AccountType
-                .valueOf(account.getAccountType()).getType());
+                .valueOf(accountDto.getAccountType()).getType());
         account.setInitialAmount(accountDto.getInitialAmount());
         account.setBalance(accountDto.getInitialAmount());
         return account;

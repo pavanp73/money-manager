@@ -74,7 +74,7 @@ public class AccountService {
     }
 
     void updateBalance(Transaction transaction, OperationType operationType){
-        TransactionType transactionType = TransactionType.valueOf(transaction.getTransactionType());
+        TransactionType transactionType = TransactionType.of(transaction.getTransactionType());
         switch (transactionType){
             case EXPENSE -> {
                 Account sourceAccount = transaction.getFromAccount();
