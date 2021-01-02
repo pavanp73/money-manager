@@ -3,7 +3,6 @@ package com.pavan.app.services.core;
 import com.pavan.app.entities.Account;
 import com.pavan.app.entities.Transaction;
 import com.pavan.app.models.dto.AccountDto;
-import com.pavan.app.models.enums.AccountType;
 import com.pavan.app.models.enums.OperationType;
 import com.pavan.app.models.enums.TransactionType;
 import com.pavan.app.repositories.AccountRepository;
@@ -77,7 +76,7 @@ public class AccountService {
         TransactionType transactionType = TransactionType.of(transaction.getTransactionType());
         switch (transactionType){
             case EXPENSE -> {
-                Account sourceAccount = transaction.getFromAccount();
+                Account sourceAccount = transaction.getAccount();
                 sourceAccount.setBalance(
                         (OperationType.DELETE.equals(operationType)) ?
                                 FinUtility.credit(sourceAccount, transaction.getAmount()) :
@@ -86,7 +85,13 @@ public class AccountService {
                 accountRepository.save(sourceAccount);
             }
             case INCOME -> {
-                //Todo - set balance
+                Account sourceAccount = transaction.getAccount();
+                sourceAccount.setBalance(
+                        (OperationType.DELETE.equals(operationType)) ?
+                                FinUtility.debit(sourceAccount, transaction.getAmount()) :
+                                FinUtility.credit(sourceAccount, transaction.getAmount())
+                );
+                accountRepository.save(sourceAccount);
             }
             case TRANSFER -> {
                 //Todo - update source and destination accounts
