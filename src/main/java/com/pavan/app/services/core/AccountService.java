@@ -1,4 +1,4 @@
-package com.pavan.app.services;
+package com.pavan.app.services.core;
 
 import com.pavan.app.entities.Account;
 import com.pavan.app.models.dto.AccountDto;
@@ -63,5 +63,9 @@ public class AccountService {
 
         //Todo - delete all transactions related to the account
         return "Account with " + accountId + " deleted successfully";
+    }
+
+    public Account getByAccountName(String accountName){
+        return accountRepository.findByAccountName(accountName);
     }
 }
