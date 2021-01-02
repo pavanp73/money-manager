@@ -3,9 +3,6 @@ package com.pavan.app.models.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pavan.app.annotations.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionDto {
 
@@ -16,13 +13,13 @@ public class TransactionDto {
     private String transactionType;
 
     @NotNullOrBlank(message = "Source Account name cannot be empty")
-    private String fromAccountName;
+    private String account;
 
     @NotNullOrBlank(message = "Category cannot be empty")
     @CheckCategory(message = "Invalid category")
     private String category;
 
-    private String toAccountName;
+    private String transferToAccount;
 
     @NotZero(message = "Amount cannot be 0/0.0")
     private Double amount;
@@ -55,12 +52,12 @@ public class TransactionDto {
         this.transactionType = transactionType;
     }
 
-    public String getFromAccountName() {
-        return fromAccountName;
+    public String getAccount() {
+        return account;
     }
 
-    public void setFromAccountName(String fromAccountName) {
-        this.fromAccountName = fromAccountName;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getCategory() {
@@ -71,12 +68,12 @@ public class TransactionDto {
         this.category = category;
     }
 
-    public String getToAccountName() {
-        return toAccountName;
+    public String getTransferToAccount() {
+        return transferToAccount;
     }
 
-    public void setToAccountName(String toAccountName) {
-        this.toAccountName = toAccountName;
+    public void setTransferToAccount(String transferToAccount) {
+        this.transferToAccount = transferToAccount;
     }
 
     public Double getAmount() {
@@ -116,9 +113,9 @@ public class TransactionDto {
         return "TransactionDto{" +
                 "id='" + id + '\'' +
                 ", transactionType='" + transactionType + '\'' +
-                ", fromAccountName='" + fromAccountName + '\'' +
+                ", fromAccountName='" + account + '\'' +
                 ", category='" + category + '\'' +
-                ", toAccountName='" + toAccountName + '\'' +
+                ", toAccountName='" + transferToAccount + '\'' +
                 ", amount=" + amount +
                 ", note='" + note + '\'' +
                 ", paymentMode='" + paymentMode + '\'' +

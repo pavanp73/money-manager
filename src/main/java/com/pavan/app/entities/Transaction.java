@@ -16,15 +16,15 @@ public class Transaction extends BaseEntity {
     private String transactionType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_account", nullable = false)
-    private Account fromAccount;
+    @JoinColumn(name = "account", nullable = false)
+    private Account account;
 
     @Column(name = "category", length = 25, nullable = false)
     private String category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_account")
-    private Account toAccount;
+    @JoinColumn(name = "transfer_to_account")
+    private Account transferToAccount;
 
     @Column(name = "amount", nullable = false)
     private Double amount;
@@ -47,12 +47,12 @@ public class Transaction extends BaseEntity {
         this.transactionType = transactionType;
     }
 
-    public Account getFromAccount() {
-        return fromAccount;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setFromAccount(Account fromAccount) {
-        this.fromAccount = fromAccount;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public String getCategory() {
@@ -63,12 +63,12 @@ public class Transaction extends BaseEntity {
         this.category = category;
     }
 
-    public Account getToAccount() {
-        return toAccount;
+    public Account getTransferToAccount() {
+        return transferToAccount;
     }
 
-    public void setToAccount(Account toAccount) {
-        this.toAccount = toAccount;
+    public void setTransferToAccount(Account transferToAccount) {
+        this.transferToAccount = transferToAccount;
     }
 
     public Double getAmount() {
@@ -107,9 +107,9 @@ public class Transaction extends BaseEntity {
     public String toString() {
         return super.toString() + "Transaction{" +
                 "transactionType='" + transactionType + '\'' +
-                ", fromAccount=" + fromAccount +
+                ", fromAccount=" + account +
                 ", category='" + category + '\'' +
-                ", toAccount=" + toAccount +
+                ", toAccount=" + transferToAccount +
                 ", amount=" + amount +
                 ", note='" + note + '\'' +
                 ", paymentMode='" + paymentMode + '\'' +

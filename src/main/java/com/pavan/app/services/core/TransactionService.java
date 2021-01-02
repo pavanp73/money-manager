@@ -31,12 +31,12 @@ public class TransactionService {
 
     public TransactionDto addTransaction(TransactionDto transactionDto){
         Transaction transaction = transactionMapper.mapOneToEntity(transactionDto);
-        Account fromAccount = accountService.getByAccountName(transactionDto.getFromAccountName());
-        transaction.setFromAccount(fromAccount);
+        Account fromAccount = accountService.getByAccountName(transactionDto.getAccount());
+        transaction.setAccount(fromAccount);
         if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.TRANSFER.name())){
             //Todo - throw exception if destination account name is empty
-            Account toAccount = accountService.getByAccountName(transactionDto.getToAccountName());
-            transaction.setToAccount(toAccount);
+            Account toAccount = accountService.getByAccountName(transactionDto.getTransferToAccount());
+            transaction.setTransferToAccount(toAccount);
         }
         Transaction savedTransaction = transactionRepository.save(transaction);
         //update account's balance as per the transaction type
