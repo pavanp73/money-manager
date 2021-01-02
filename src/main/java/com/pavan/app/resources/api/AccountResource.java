@@ -1,7 +1,7 @@
 package com.pavan.app.resources.api;
 
 import com.pavan.app.models.dto.AccountDto;
-import com.pavan.app.services.AccountService;
+import com.pavan.app.services.core.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,6 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-
 @RequestMapping("accounts")
 public class AccountResource {
 

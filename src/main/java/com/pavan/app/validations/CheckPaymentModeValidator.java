@@ -1,15 +1,15 @@
 package com.pavan.app.validations;
 
-import com.pavan.app.annotations.CheckAccountType;
-import com.pavan.app.models.enums.AccountType;
+import com.pavan.app.annotations.CheckPaymentMode;
+import com.pavan.app.models.enums.PaymentMode;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckAccountTypeValidator implements ConstraintValidator<CheckAccountType, String> {
+public class CheckPaymentModeValidator implements ConstraintValidator<CheckPaymentMode, String> {
 
     @Override
-    public void initialize(CheckAccountType constraintAnnotation) {
+    public void initialize(CheckPaymentMode constraintAnnotation) {
     }
 
     @Override
@@ -17,7 +17,7 @@ public class CheckAccountTypeValidator implements ConstraintValidator<CheckAccou
         if(s == null || s.isEmpty()){
             return false;
         }
-        for (AccountType e : AccountType.values()){
+        for (PaymentMode e : PaymentMode.values()){
             if(e.name().equals(s)){
                 return true;
             }

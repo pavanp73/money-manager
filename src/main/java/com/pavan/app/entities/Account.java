@@ -17,10 +17,10 @@ public class Account extends BaseEntity {
     private String accountType;
 
     @Column(name = "initial_amount", nullable = false)
-    private double initialAmount;
+    private Double initialAmount;
 
     @Column(name = "balance", nullable = false)
-    private double balance;
+    private Double balance;
 
     public String getAccountName() {
         return accountName;
@@ -38,19 +38,19 @@ public class Account extends BaseEntity {
         this.accountType = accountType;
     }
 
-    public double getInitialAmount() {
+    public Double getInitialAmount() {
         return initialAmount;
     }
 
-    public void setInitialAmount(double initialAmount) {
+    public void setInitialAmount(Double initialAmount) {
         this.initialAmount = initialAmount;
     }
 
-    public double getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(Double balance) {
         this.balance = balance;
     }
 

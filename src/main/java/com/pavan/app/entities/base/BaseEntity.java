@@ -1,7 +1,9 @@
 package com.pavan.app.entities.base;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -23,10 +25,12 @@ public class BaseEntity {
 
     @Type(type = "org.hibernate.type.LocalDateTimeType")
     @Column(name = "created_time", nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdTime;
 
     @Type(type = "org.hibernate.type.LocalDateTimeType")
     @Column(name = "updated_time", nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedTime;
 
     public UUID getId() {
@@ -35,14 +39,6 @@ public class BaseEntity {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    @PrePersist
-    public void setup() {
-        if (createdTime == null) {
-            createdTime = LocalDateTime.now();
-        }
-        updatedTime = LocalDateTime.now();
     }
 
     public LocalDateTime getCreatedTime() {

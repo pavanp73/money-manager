@@ -2,6 +2,7 @@ package com.pavan.app.services.mapper;
 
 import com.pavan.app.entities.Account;
 import com.pavan.app.models.dto.AccountDto;
+import com.pavan.app.models.enums.AccountType;
 import com.pavan.app.services.mapper.base.AbstractMapper;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,8 @@ public class AccountMapper extends AbstractMapper<Account, AccountDto> {
     protected Account mapToEntity(AccountDto accountDto) {
         Account account = new Account();
         account.setAccountName(accountDto.getAccountName());
-        account.setAccountType(accountDto.getAccountType());
+        account.setAccountType(AccountType
+                .valueOf(accountDto.getAccountType()).getType());
         account.setInitialAmount(accountDto.getInitialAmount());
         account.setBalance(accountDto.getInitialAmount());
         return account;

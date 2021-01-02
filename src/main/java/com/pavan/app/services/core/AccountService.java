@@ -1,14 +1,18 @@
-package com.pavan.app.services;
+package com.pavan.app.services.core;
 
 import com.pavan.app.entities.Account;
+import com.pavan.app.entities.Transaction;
 import com.pavan.app.models.dto.AccountDto;
+import com.pavan.app.models.enums.AccountType;
+import com.pavan.app.models.enums.OperationType;
+import com.pavan.app.models.enums.TransactionType;
 import com.pavan.app.repositories.AccountRepository;
 import com.pavan.app.services.mapper.AccountMapper;
 import com.pavan.app.services.mapper.base.AbstractMapper;
+import com.pavan.app.services.util.FinUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,5 +67,30 @@ public class AccountService {
 
         //Todo - delete all transactions related to the account
         return "Account with " + accountId + " deleted successfully";
+    }
+
+    public Account getByAccountName(String accountName){
+        return accountRepository.findByAccountName(accountName);
+    }
+
+    void updateBalance(Transaction transaction, OperationType operationType){
+        TransactionType transactionType = TransactionType.of(transaction.getTransactionType());
+        switch (transactionType){
+            case EXPENSE -> {
+                Account sourceAccount = transaction.getFromAccount();
+                sourceAccount.setBalance(
+                        (OperationType.DELETE.equals(operationType)) ?
+                                FinUtility.credit(sourceAccount, transaction.getAmount()) :
+                                FinUtility.debit(sourceAccount, transaction.getAmount())
+                );
+                accountRepository.save(sourceAccount);
+            }
+            case INCOME -> {
+                //Todo - set balance
+            }
+            case TRANSFER -> {
+                //Todo - update source and destination accounts
+            }
+        }
     }
 }

@@ -15,4 +15,12 @@ public enum TransactionType {
     public String getType() {
         return type;
     }
+
+    public static TransactionType of(String value){
+        for(TransactionType e : TransactionType.values()){
+            if(e.getType().equals(value))
+                return e;
+        }
+        throw new IllegalArgumentException(value);
+    }
 }

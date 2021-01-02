@@ -2,8 +2,10 @@ package com.pavan.app.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pavan.app.entities.base.BaseEntity;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "MM_TRANSACTION")
@@ -25,13 +27,17 @@ public class Transaction extends BaseEntity {
     private Account toAccount;
 
     @Column(name = "amount", nullable = false)
-    private double amount;
+    private Double amount;
 
     @Column(name = "note", length = 200)
     private String note;
 
     @Column(name = "payment_mode", length = 25, nullable = false)
     private String paymentMode;
+
+    @Type(type = "org.hibernate.type.LocalDateType")
+    @Column(name = "transaction_date", nullable = false)
+    private LocalDate transactionDate;
 
     public String getTransactionType() {
         return transactionType;
@@ -65,11 +71,11 @@ public class Transaction extends BaseEntity {
         this.toAccount = toAccount;
     }
 
-    public double getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
@@ -87,6 +93,14 @@ public class Transaction extends BaseEntity {
 
     public void setPaymentMode(String paymentMode) {
         this.paymentMode = paymentMode;
+    }
+
+    public LocalDate getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(LocalDate transactionDate) {
+        this.transactionDate = transactionDate;
     }
 
     @Override
