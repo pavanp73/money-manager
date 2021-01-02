@@ -2,6 +2,9 @@ package com.pavan.app.services.mapper;
 
 import com.pavan.app.entities.Transaction;
 import com.pavan.app.models.dto.TransactionDto;
+import com.pavan.app.models.enums.Category;
+import com.pavan.app.models.enums.PaymentMode;
+import com.pavan.app.models.enums.TransactionType;
 import com.pavan.app.services.mapper.base.AbstractMapper;
 import com.pavan.app.services.util.DateUtility;
 import org.springframework.stereotype.Service;
@@ -14,11 +17,14 @@ public class TransactionMapper extends AbstractMapper<Transaction, TransactionDt
     @Override
     protected Transaction mapToEntity(TransactionDto transactionDto) {
         Transaction transaction = new Transaction();
-        transaction.setTransactionType(transactionDto.getTransactionType());
-        transaction.setCategory(transactionDto.getCategory());
+        transaction.setTransactionType(TransactionType
+                .valueOf(transactionDto.getTransactionType()).getType());
+        transaction.setCategory(Category
+                .valueOf(transactionDto.getCategory()).getCategoryName());
         transaction.setAmount(transactionDto.getAmount());
         transaction.setNote(transactionDto.getNote());
-        transaction.setPaymentMode(transactionDto.getPaymentMode());
+        transaction.setPaymentMode(PaymentMode
+                .valueOf(transactionDto.getPaymentMode()).getMode());
         transaction.setTransactionDate(
                 DateUtility.convertToDate(transactionDto.getTransactionDate()));
         return transaction;
