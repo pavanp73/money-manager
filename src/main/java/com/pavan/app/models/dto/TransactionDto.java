@@ -113,9 +113,9 @@ public class TransactionDto {
         return "TransactionDto{" +
                 "id='" + id + '\'' +
                 ", transactionType='" + transactionType + '\'' +
-                ", fromAccountName='" + account + '\'' +
+                ", sourceAccountName='" + account + '\'' +
                 ", category='" + category + '\'' +
-                ", toAccountName='" + transferToAccount + '\'' +
+                ", destinationAccountName='" + transferToAccount + '\'' +
                 ", amount=" + amount +
                 ", note='" + note + '\'' +
                 ", paymentMode='" + paymentMode + '\'' +
