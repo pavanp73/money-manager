@@ -31,24 +31,7 @@ public class TransactionService {
     }
 
     public TransactionDto addTransaction(TransactionDto transactionDto){
-        Transaction transaction = transactionMapper.mapOneToEntity(transactionDto);
-        Account account = accountService.getByAccountName(transactionDto.getAccount());
-
-        if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.EXPENSE.name())){
-            account.setBalance(FinUtility.debit(account.getBalance(), transactionDto.getAmount()));
-        }
-        else if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.INCOME.name())){
-            account.setBalance(FinUtility.credit(account.getBalance(), transactionDto.getAmount()));
-        }
-        else{
-            // TRANSFER transaction type
-            //Todo - throw exception if destination account name is empty
-            Account transferToAccount = accountService.getByAccountName(transactionDto.getTransferToAccount());
-            account.setBalance(FinUtility.debit(account.getBalance(), transactionDto.getAmount()));
-            transferToAccount.setBalance(FinUtility.credit(transferToAccount.getBalance(), transactionDto.getAmount()));
-            transaction.setTransferToAccount(transferToAccount);
-        }
-        transaction.setAccount(account);
+        Transaction transaction = createTransactionEntityForAddAndUpdate(transactionDto);
         return transactionMapper.mapOneToDto(
                 transactionRepository.save(transaction));
     }
@@ -69,12 +52,21 @@ public class TransactionService {
         if(transaction == null){
             return null;
         }
-        // delete the transaction and update balances
-        transactionRepository.delete(transaction);
-        updateBalanceForDeletedTransaction(transaction);
+        restoreAccountBalance(transaction);
 
-        // add new transaction with updated transaction
-        return addTransaction(transactionDto);
+        // update transaction
+        Transaction updatedTransaction = createTransactionEntityForAddAndUpdate(transactionDto);
+        transaction.setAccount(updatedTransaction.getAccount());
+        transaction.setTransferToAccount(updatedTransaction.getTransferToAccount());
+        transaction.setTransactionType(updatedTransaction.getTransactionType());
+        transaction.setTransactionDate(updatedTransaction.getTransactionDate());
+        transaction.setAmount(updatedTransaction.getAmount());
+        transaction.setCategory(updatedTransaction.getCategory());
+        transaction.setNote(updatedTransaction.getNote());
+        transaction.setPaymentMode(updatedTransaction.getPaymentMode());
+        return transactionMapper.mapOneToDto(
+                transactionRepository.save(transaction)
+        );
     }
 
     public String deleteTransaction(String transactionId){
@@ -86,12 +78,12 @@ public class TransactionService {
         //delete transaction
         transactionRepository.delete(transaction);
         //update account balance
-        updateBalanceForDeletedTransaction(transaction);
+        restoreAccountBalance(transaction);
         return "Transaction with " + transactionId + " deleted successfully";
     }
 
 
-    private void updateBalanceForDeletedTransaction(Transaction transaction) {
+    private void restoreAccountBalance(Transaction transaction) {
         List<Account> accountList = new ArrayList<>();
         Account account = transaction.getAccount();
         if(transaction.getTransactionType().equalsIgnoreCase(TransactionType.EXPENSE.name())){
@@ -109,5 +101,27 @@ public class TransactionService {
         }
         accountList.add(account);
         accountService.updateAccounts(accountList);
+    }
+
+    private Transaction createTransactionEntityForAddAndUpdate(TransactionDto transactionDto) {
+        Transaction transaction = transactionMapper.mapOneToEntity(transactionDto);
+        Account account = accountService.getByAccountName(transactionDto.getAccount());
+
+        if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.EXPENSE.name())){
+            account.setBalance(FinUtility.debit(account.getBalance(), transactionDto.getAmount()));
+        }
+        else if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.INCOME.name())){
+            account.setBalance(FinUtility.credit(account.getBalance(), transactionDto.getAmount()));
+        }
+        else{
+            // TRANSFER transaction type
+            //Todo - throw exception if destination account name is empty
+            Account transferToAccount = accountService.getByAccountName(transactionDto.getTransferToAccount());
+            account.setBalance(FinUtility.debit(account.getBalance(), transactionDto.getAmount()));
+            transferToAccount.setBalance(FinUtility.credit(transferToAccount.getBalance(), transactionDto.getAmount()));
+            transaction.setTransferToAccount(transferToAccount);
+        }
+        transaction.setAccount(account);
+        return transaction;
     }
 }

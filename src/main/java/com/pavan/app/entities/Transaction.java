@@ -107,9 +107,9 @@ public class Transaction extends BaseEntity {
     public String toString() {
         return super.toString() + "Transaction{" +
                 "transactionType='" + transactionType + '\'' +
-                ", fromAccount=" + account +
+                ",account=" + account +
                 ", category='" + category + '\'' +
-                ", toAccount=" + transferToAccount +
+                ", transferToAccount=" + transferToAccount +
                 ", amount=" + amount +
                 ", note='" + note + '\'' +
                 ", paymentMode='" + paymentMode + '\'' +
