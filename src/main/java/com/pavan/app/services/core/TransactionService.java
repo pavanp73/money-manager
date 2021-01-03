@@ -3,14 +3,14 @@ package com.pavan.app.services.core;
 import com.pavan.app.entities.Account;
 import com.pavan.app.entities.Transaction;
 import com.pavan.app.models.dto.TransactionDto;
-import com.pavan.app.models.enums.OperationType;
 import com.pavan.app.models.enums.TransactionType;
 import com.pavan.app.repositories.TransactionRepository;
 import com.pavan.app.services.mapper.TransactionMapper;
-import com.pavan.app.services.util.DateUtility;
+import com.pavan.app.services.util.FinUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,17 +32,25 @@ public class TransactionService {
 
     public TransactionDto addTransaction(TransactionDto transactionDto){
         Transaction transaction = transactionMapper.mapOneToEntity(transactionDto);
-        Account fromAccount = accountService.getByAccountName(transactionDto.getAccount());
-        transaction.setAccount(fromAccount);
-        if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.TRANSFER.name())){
-            //Todo - throw exception if destination account name is empty
-            Account toAccount = accountService.getByAccountName(transactionDto.getTransferToAccount());
-            transaction.setTransferToAccount(toAccount);
+        Account account = accountService.getByAccountName(transactionDto.getAccount());
+
+        if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.EXPENSE.name())){
+            account.setBalance(FinUtility.debit(account.getBalance(), transactionDto.getAmount()));
         }
-        Transaction savedTransaction = transactionRepository.save(transaction);
-        //update account's balance as per the transaction type
-        accountService.updateBalance(savedTransaction, OperationType.ADD_OR_UPDATE);
-        return transactionMapper.mapOneToDto(savedTransaction);
+        else if(transactionDto.getTransactionType().equalsIgnoreCase(TransactionType.INCOME.name())){
+            account.setBalance(FinUtility.credit(account.getBalance(), transactionDto.getAmount()));
+        }
+        else{
+            // TRANSFER transaction type
+            //Todo - throw exception if destination account name is empty
+            Account transferToAccount = accountService.getByAccountName(transactionDto.getTransferToAccount());
+            account.setBalance(FinUtility.debit(account.getBalance(), transactionDto.getAmount()));
+            transferToAccount.setBalance(FinUtility.credit(transferToAccount.getBalance(), transactionDto.getAmount()));
+            transaction.setTransferToAccount(transferToAccount);
+        }
+        transaction.setAccount(account);
+        return transactionMapper.mapOneToDto(
+                transactionRepository.save(transaction));
     }
 
     public List<TransactionDto> getAllTransactions(){
@@ -61,19 +69,12 @@ public class TransactionService {
         if(transaction == null){
             return null;
         }
-        transaction.setTransactionType(transactionDto.getTransactionType());
-        transaction.setAmount(transactionDto.getAmount());
-        transaction.setCategory(transactionDto.getCategory());
-        transaction.setNote(transactionDto.getNote());
-        transaction.setPaymentMode(transactionDto.getPaymentMode());
-        transaction.setTransactionDate(DateUtility.convertToDate(transactionDto.getTransactionDate()));
+        // delete the transaction and update balances
+        transactionRepository.delete(transaction);
+        updateBalanceForDeletedTransaction(transaction);
 
-        Transaction updatedTransaction = transactionRepository.save(transaction);
-        //if there is any change in amount then update account's balance
-        if(!updatedTransaction.getAmount().equals(transactionDto.getAmount())){
-            accountService.updateBalance(updatedTransaction, OperationType.ADD_OR_UPDATE);
-        }
-        return transactionMapper.mapOneToDto(updatedTransaction);
+        // add new transaction with updated transaction
+        return addTransaction(transactionDto);
     }
 
     public String deleteTransaction(String transactionId){
@@ -82,8 +83,31 @@ public class TransactionService {
         if(transaction == null){
             return null;
         }
+        //delete transaction
         transactionRepository.delete(transaction);
-        accountService.updateBalance(transaction, OperationType.DELETE);
+        //update account balance
+        updateBalanceForDeletedTransaction(transaction);
         return "Transaction with " + transactionId + " deleted successfully";
+    }
+
+
+    private void updateBalanceForDeletedTransaction(Transaction transaction) {
+        List<Account> accountList = new ArrayList<>();
+        Account account = transaction.getAccount();
+        if(transaction.getTransactionType().equalsIgnoreCase(TransactionType.EXPENSE.name())){
+            account.setBalance(FinUtility.credit(account.getBalance(), transaction.getAmount()));
+        }
+        else if(transaction.getTransactionType().equalsIgnoreCase(TransactionType.INCOME.name())){
+            account.setBalance(FinUtility.debit(account.getBalance(), transaction.getAmount()));
+        }
+        else{
+            // TRANSFER transaction type
+            Account transferToAccount = transaction.getTransferToAccount();
+            account.setBalance(FinUtility.credit(account.getBalance(), transaction.getAmount()));
+            transferToAccount.setBalance(FinUtility.debit(transferToAccount.getBalance(), transaction.getAmount()));
+            accountList.add(transferToAccount);
+        }
+        accountList.add(account);
+        accountService.updateAccounts(accountList);
     }
 }
