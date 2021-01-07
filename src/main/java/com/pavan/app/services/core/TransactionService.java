@@ -1,14 +1,19 @@
 package com.pavan.app.services.core;
 
+import com.pavan.app.annotations.CheckAccountType;
 import com.pavan.app.entities.Account;
 import com.pavan.app.entities.Transaction;
+import com.pavan.app.exceptions.EntityNotFoundException;
+import com.pavan.app.exceptions.TransferAccountCannotBeEmptyException;
 import com.pavan.app.models.dto.TransactionDto;
 import com.pavan.app.models.enums.TransactionType;
 import com.pavan.app.repositories.TransactionRepository;
 import com.pavan.app.services.mapper.TransactionMapper;
 import com.pavan.app.services.util.FinUtility;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +48,14 @@ public class TransactionService {
         if(!transactionDtoList.isEmpty()){
             return transactionDtoList;
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public TransactionDto updateTransaction(String transactionId, TransactionDto transactionDto){
         UUID id = UUID.fromString(transactionId);
         Transaction transaction = transactionRepository.findById(id).orElse(null);
         if(transaction == null){
-            return null;
+            throw new EntityNotFoundException("Transaction was not found for {id = " + id + "}. Update failed.");
         }
         restoreAccountBalance(transaction);
 
@@ -73,7 +78,7 @@ public class TransactionService {
         UUID id = UUID.fromString(transactionId);
         Transaction transaction = transactionRepository.findById(id).orElse(null);
         if(transaction == null){
-            return null;
+            throw new EntityNotFoundException("Transaction was not found for {id = " + id + "}. Delete failed.");
         }
         //delete transaction
         transactionRepository.delete(transaction);
@@ -115,7 +120,7 @@ public class TransactionService {
         }
         else{
             // TRANSFER transaction type
-            //Todo - throw exception if destination account name is empty
+            validateTransferAccountForTransferType(transactionDto.getTransferToAccount());
             Account transferToAccount = accountService.getByAccountName(transactionDto.getTransferToAccount());
             account.setBalance(FinUtility.debit(account.getBalance(), transactionDto.getAmount()));
             transferToAccount.setBalance(FinUtility.credit(transferToAccount.getBalance(), transactionDto.getAmount()));
@@ -123,5 +128,11 @@ public class TransactionService {
         }
         transaction.setAccount(account);
         return transaction;
+    }
+
+    private void validateTransferAccountForTransferType(String transferToAccount) {
+        if(transferToAccount == null || transferToAccount.isEmpty()){
+            throw new TransferAccountCannotBeEmptyException("Transfer account cannot be empty for TRANSFER transaction type");
+        }
     }
 }

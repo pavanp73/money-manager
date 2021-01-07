@@ -21,7 +21,7 @@ public class TransactionDto {
 
     private String transferToAccount;
 
-    @NotZero(message = "Amount cannot be 0/0.0")
+    @NotZero(message = "Amount cannot be zero")
     private Double amount;
 
     private String note;
