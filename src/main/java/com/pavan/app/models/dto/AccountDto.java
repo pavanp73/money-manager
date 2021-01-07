@@ -14,11 +14,10 @@ public class AccountDto {
     private String accountName;
 
     @NotNullOrBlank(message = "Account type cannot be empty")
-    @CheckAccountType(message = "Account type must be either " +
-            "Bank/Debit Card/Credit Card/Wallet/Savings")
+    @CheckAccountType(message = "Invalid account type")
     private String accountType;
 
-    @NotZero(message = "Initial amount cannot be 0/0.0")
+    @NotZero(message = "Initial amount cannot be zero")
     private Double initialAmount;
 
     private Double balance;
