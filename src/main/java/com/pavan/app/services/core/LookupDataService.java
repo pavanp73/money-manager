@@ -6,6 +6,7 @@ import com.pavan.app.models.enums.AccountType;
 import com.pavan.app.models.enums.Category;
 import com.pavan.app.models.enums.PaymentMode;
 import com.pavan.app.models.enums.TransactionType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -13,15 +14,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class LookupDataService {
 
     public LookupDataDto getAllLookupData() {
+        log.info("Fetching lookup data");
         return new LookupDataDto(
                 getAllAccountTypes(),
                 getAllTransactionTypes(),
                 getAllPaymentModes(),
                 getAllCategories(TransactionType.INCOME),
-                getAllCategories(TransactionType.EXPENSE));
+                getAllCategories(TransactionType.EXPENSE),
+                getAllCategories(TransactionType.TRANSFER));
     }
 
     private List<LookupData> getAllAccountTypes() {

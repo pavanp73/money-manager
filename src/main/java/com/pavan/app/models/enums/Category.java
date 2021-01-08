@@ -21,6 +21,7 @@ public enum Category {
     GIFT("Gift", TransactionType.INCOME),
     PAYMENTS("Payments", TransactionType.INCOME),
 
+    ATM_WITHDRAW("ATM Withdraw", TransactionType.TRANSFER),
     OWN_TRANSFER("Own Transfer", TransactionType.TRANSFER);
 
     private final String categoryName;

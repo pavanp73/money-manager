@@ -1,6 +1,5 @@
 package com.pavan.app.services.core;
 
-import com.pavan.app.annotations.CheckAccountType;
 import com.pavan.app.entities.Account;
 import com.pavan.app.entities.Transaction;
 import com.pavan.app.exceptions.EntityNotFoundException;
@@ -10,16 +9,16 @@ import com.pavan.app.models.enums.TransactionType;
 import com.pavan.app.repositories.TransactionRepository;
 import com.pavan.app.services.mapper.TransactionMapper;
 import com.pavan.app.services.util.FinUtility;
-import org.hibernate.exception.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
@@ -36,9 +35,13 @@ public class TransactionService {
     }
 
     public TransactionDto addTransaction(TransactionDto transactionDto){
+        log.info("Creating a transaction");
         Transaction transaction = createTransactionEntityForAddAndUpdate(transactionDto);
-        return transactionMapper.mapOneToDto(
-                transactionRepository.save(transaction));
+
+        transaction = transactionRepository.save(transaction);
+        log.info("Transaction created with id: {}", transaction.getId());
+
+        return transactionMapper.mapOneToDto(transaction);
     }
 
     public List<TransactionDto> getAllTransactions(){
@@ -46,17 +49,22 @@ public class TransactionService {
                 transactionRepository.findAll()
         );
         if(!transactionDtoList.isEmpty()){
+            log.info("Total number of transactions: {}", transactionDtoList.size());
             return transactionDtoList;
         }
+        log.info("No transactions found");
         return new ArrayList<>();
     }
 
     public TransactionDto updateTransaction(String transactionId, TransactionDto transactionDto){
         UUID id = UUID.fromString(transactionId);
+        log.info("Transaction to be updated: {}", id);
         Transaction transaction = transactionRepository.findById(id).orElse(null);
         if(transaction == null){
+            log.error("Transaction was not found for {id = {}}. Update failed.", id);
             throw new EntityNotFoundException("Transaction was not found for {id = " + id + "}. Update failed.");
         }
+        log.info("Restoring account balances before update");
         restoreAccountBalance(transaction);
 
         // update transaction
@@ -69,20 +77,27 @@ public class TransactionService {
         transaction.setCategory(updatedTransaction.getCategory());
         transaction.setNote(updatedTransaction.getNote());
         transaction.setPaymentMode(updatedTransaction.getPaymentMode());
-        return transactionMapper.mapOneToDto(
-                transactionRepository.save(transaction)
-        );
+
+        transaction = transactionRepository.save(transaction);
+        log.info("Transaction with id: {} updated successfully", id);
+
+        return transactionMapper.mapOneToDto(transaction);
     }
 
     public String deleteTransaction(String transactionId){
         UUID id = UUID.fromString(transactionId);
+        log.info("Transaction to be deleted: {}", id);
         Transaction transaction = transactionRepository.findById(id).orElse(null);
         if(transaction == null){
+            log.error("Transaction was not found for {id = {}}. Delete failed.", id);
             throw new EntityNotFoundException("Transaction was not found for {id = " + id + "}. Delete failed.");
         }
         //delete transaction
         transactionRepository.delete(transaction);
+        log.info("Transaction with id: {} deleted successfully", id);
+
         //update account balance
+        log.info("Restoring account balances after deleting transaction");
         restoreAccountBalance(transaction);
         return "Transaction with " + transactionId + " deleted successfully";
     }
@@ -132,6 +147,7 @@ public class TransactionService {
 
     private void validateTransferAccountForTransferType(String transferToAccount) {
         if(transferToAccount == null || transferToAccount.isEmpty()){
+            log.error("Transfer account : {} cannot be empty for TRANSFER transaction type", transferToAccount);
             throw new TransferAccountCannotBeEmptyException("Transfer account cannot be empty for TRANSFER transaction type");
         }
     }
