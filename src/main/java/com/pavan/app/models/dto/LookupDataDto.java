@@ -9,17 +9,20 @@ public class LookupDataDto {
     private final List<LookupData> paymentModes;
     private final List<LookupData> incomeCategories;
     private final List<LookupData> expenseCategories;
+    private final List<LookupData> transferCategories;
 
     public LookupDataDto(List<LookupData> accountTypes,
                          List<LookupData> transactionTypes,
                          List<LookupData> paymentModes,
                          List<LookupData> incomeCategories,
-                         List<LookupData> expenseCategories) {
+                         List<LookupData> expenseCategories,
+                         List<LookupData> transferCategories) {
         this.accountTypes = accountTypes;
         this.transactionTypes = transactionTypes;
         this.paymentModes = paymentModes;
         this.incomeCategories = incomeCategories;
         this.expenseCategories = expenseCategories;
+        this.transferCategories = transferCategories;
     }
 
     public List<LookupData> getAccountTypes() {
@@ -42,6 +45,10 @@ public class LookupDataDto {
         return expenseCategories;
     }
 
+    public List<LookupData> getTransferCategories() {
+        return transferCategories;
+    }
+
     @Override
     public String toString() {
         return "LookupDataDto{" +
@@ -50,6 +57,7 @@ public class LookupDataDto {
                 ", paymentModes=" + paymentModes +
                 ", incomeCategories=" + incomeCategories +
                 ", expenseCategories=" + expenseCategories +
+                ", transferCategories=" + transferCategories +
                 '}';
     }
 }
